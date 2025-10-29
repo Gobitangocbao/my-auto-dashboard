@@ -130,8 +130,8 @@ st.set_page_config(layout="wide", page_title="AI-Generated Dashboard")
 @st.cache_resource
 def init_connection():
     try:
-        url = st.secrets["SUPABASE_URL"]
-        key = st.secrets["SUPABASE_KEY"]
+        url = st.secrets["https://bfupyyhaxbnegsgtjmrq.supabase.co"]
+        key = st.secrets["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmdXB5eWhheGJuZWdzZ3RqbXJxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTc0MjUzMiwiZXhwIjoyMDc3MzE4NTMyfQ.g02yPud1xoaHW4cegdOjRQtuZvR3PV9luXIlVEJ05j8"]
         return create_client(url, key)
     except Exception as e:
         st.error(f"Lỗi kết nối Supabase. Vui lòng kiểm tra file Secrets. Lỗi: {e}")
