@@ -59,6 +59,65 @@ def animated_background():
     </div>
     """
     st.markdown(css_code, unsafe_allow_html=True)
+
+# ==============================================================================
+# KHỐI CODE TẠO HIỆU ỨNG VIỀN CẦU VỒNG PHÁT SÁNG
+# ==============================================================================
+def glowing_border_css():
+    css_code = """
+    <style>
+        @keyframes rotate_glow {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .glowing-card {
+            position: relative; /* Bắt buộc để định vị cho viền phát sáng */
+            background-color: #1a1a1a; /* Màu nền cho thẻ, bạn có thể thay đổi */
+            border-radius: 1.25rem; /* Bo góc giống với ví dụ */
+            padding: 2rem; /* Khoảng đệm bên trong thẻ */
+            margin-bottom: 1.5rem; /* Khoảng cách giữa các thẻ */
+            overflow: hidden; /* Cần thiết để viền không bị tràn ra ngoài */
+        }
+
+        .glowing-card::before {
+            content: '';
+            position: absolute;
+            left: -2px; /* Dịch ra ngoài một chút để không bị che */
+            top: -2px;
+            width: calc(100% + 4px); /* Lớn hơn thẻ một chút */
+            height: calc(100% + 4px);
+            
+            /* Dải màu cầu vồng */
+            background: conic-gradient(
+                from 180deg at 50% 50%,
+                #DD7BBB 0%,
+                #D79F1E 25%,
+                #5A922C 50%,
+                #4C7894 75%,
+                #DD7BBB 100%
+            );
+            
+            z-index: 1; /* Nằm ngay sau nội dung thẻ */
+            
+            /* Animation xoay tròn liên tục */
+            animation: rotate_glow 4s linear infinite;
+        }
+
+        .glowing-card > div { /* Nhắm vào container nội dung của Streamlit */
+            position: relative; /* Đảm bảo nội dung nằm trên viền */
+            z-index: 2;
+            background-color: inherit; /* Nền của nội dung giống nền thẻ */
+            padding: 1rem;
+            border-radius: calc(1.25rem - 2px); /* Bo góc nhỏ hơn viền một chút */
+        }
+    </style>
+    """
+    st.markdown(css_code, unsafe_allow_html=True)
     
 # ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
@@ -268,8 +327,13 @@ def render_dashboard(config, df):
 # ==============================================================================
 
 # ==============================================================================
-# GỌI HIỆU ỨNG NỀN NGAY TẠI ĐÂY!
+# Gọi các hàm CSS một lần ở đây
 animated_background()
+glowing_border_css() # <-- Dòng mới bạn vừa thêm
+# ==============================================================================
+
+# Lấy dashboard_id từ tham số URL
+# ... (Phần code còn lại giữ nguyên)
 
 # Lấy dashboard_id từ tham số URL
 dashboard_id = st.query_params.get("dashboard_id")
