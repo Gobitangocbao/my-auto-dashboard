@@ -9,6 +9,58 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # ==============================================================================
+# KHỐI CODE TẠO HIỆU ỨNG NỀN ĐỘNG BẰNG CSS
+# ==============================================================================
+def animated_background():
+    css_code = """
+    <style>
+        /* CSS để tạo một canvas trống nằm dưới cùng */
+        .background-canvas {
+            position: fixed; /* Cố định vị trí */
+            top: 0;
+            left: 0;
+            width: 100vw; /* Chiếm toàn bộ chiều rộng */
+            height: 100vh; /* Chiếm toàn bộ chiều cao */
+            z-index: -1;  /* ĐÂY LÀ ĐIỀU QUAN TRỌNG NHẤT: Đảm bảo nó nằm dưới mọi thứ khác */
+            overflow: hidden;
+        }
+        
+        /* CSS cho các đường kẻ động */
+        @keyframes move {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        .line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(200,200,200,0), rgba(200,200,200,0.5), rgba(200,200,200,0));
+            animation: move linear infinite;
+        }
+    </style>
+    
+    <div class="background-canvas">
+        <script>
+            // JavaScript để tạo ra nhiều đường kẻ ngẫu nhiên
+            const container = document.querySelector('.background-canvas');
+            for (let i = 0; i < 50; i++) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                line.style.top = Math.random() * 100 + 'vh';
+                line.style.width = Math.random() * 50 + 50 + 'vw';
+                line.style.animationDuration = (Math.random() * 20 + 20) + 's';
+                line.style.animationDelay = Math.random() * -40 + 's'; // Bắt đầu ở các vị trí khác nhau
+                container.appendChild(line);
+            }
+        </script>
+    </div>
+    """
+    st.markdown(css_code, unsafe_allow_html=True)
+    
+# ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
 # ==============================================================================
 
@@ -215,6 +267,21 @@ def render_dashboard(config, df):
 # PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION)
 # ==============================================================================
 
+# ==============================================================================
+# GỌI HIỆU ỨNG NỀN NGAY TẠI ĐÂY!
+animated_background()
+
+# Lấy dashboard_id từ tham số URL
+dashboard_id = st.query_params.get("dashboard_id")
+
+if not dashboard_id:
+    st.title("🚀 Chào mừng đến với Trình tạo Dashboard bằng AI")
+    st.markdown("...") # Giữ nguyên phần chào mừng
+else:
+    # Phần còn lại của code của bạn để render dashboard
+    # ...
+# ==============================================================================
+    
 # Lấy dashboard_id từ tham số URL
 dashboard_id = st.query_params.get("dashboard_id")
 
