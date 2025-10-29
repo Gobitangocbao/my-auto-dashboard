@@ -333,20 +333,6 @@ glowing_border_css() # <-- Dòng mới bạn vừa thêm
 # ==============================================================================
 
 # Lấy dashboard_id từ tham số URL
-# ... (Phần code còn lại giữ nguyên)
-
-# Lấy dashboard_id từ tham số URL
-dashboard_id = st.query_params.get("dashboard_id")
-
-if not dashboard_id:
-    st.title("🚀 Chào mừng đến với Trình tạo Dashboard bằng AI")
-    st.markdown("...") # Giữ nguyên phần chào mừng
-else:
-    # Phần còn lại của code của bạn để render dashboard
-    # ...
-# ==============================================================================
-    
-# Lấy dashboard_id từ tham số URL
 dashboard_id = st.query_params.get("dashboard_id")
 
 if not dashboard_id:
