@@ -8,32 +8,47 @@ import json
 import plotly.express as px
 import plotly.graph_objects as go
 
+# app.py -> Thay thế hoàn toàn hàm cũ của bạn bằng hàm mới này
+
 # ==============================================================================
-# HÀM DUY NHẤT ĐỂ QUẢN LÝ TẤT CẢ CÁC STYLE VÀ HIỆU ỨNG
+# HÀM DUY NHẤT ĐỂ QUẢN LÝ TẤT CẢ CÁC STYLE VÀ HIỆU ỨNG V3.0 (ĐÃ SỬA LỖI)
 # ==============================================================================
 def apply_global_styles_and_effects():
     """
     Hàm này gộp tất cả CSS và JS cần thiết cho toàn bộ ứng dụng và "tiêm" chúng một lần duy nhất.
+    Phiên bản này sử dụng hiệu ứng "sao chổi" cho nền.
     """
     
-    # Mã CSS gộp từ cả hai hiệu ứng
+    # Mã CSS và JS gộp cho tất cả các hiệu ứng toàn cục
     full_css_and_js = """
     <style>
-        /* === Hiệu ứng Nền Động (animated_background) === */
-        .background-canvas {
+        /* === Hiệu ứng Nền Sao Chổi MỚI (shooting_stars_background) === */
+        .stars-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; overflow: hidden;
+            z-index: -1; overflow: hidden; pointer-events: none;
         }
-        @keyframes move {
-            100% { transform: translateX(-100%); }
+        @keyframes animStar {
+            from {
+                transform: translate(-100px, -100px);
+            }
+            to {
+                transform: translate(calc(100vw + 100px), calc(100vh + 100px));
+            }
         }
-        .line {
-            position: absolute; height: 1px;
-            background: linear-gradient(90deg, rgba(200,200,200,0), rgba(200,200,200,0.5), rgba(200,200,200,0));
-            animation: move linear infinite;
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 200px;
+            /* Thay đổi màu nền để hiển thị tốt trên nền trắng */
+            background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0)); 
+            animation-name: animStar;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
         }
         
         /* === Hiệu ứng Viền Phát sáng (glowing_border_css) === */
+        /* Giữ nguyên như cũ */
         @keyframes rotate_glow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -54,26 +69,26 @@ def apply_global_styles_and_effects():
         }
     </style>
     
-    <div class="background-canvas">
+    <div class="stars-container">
         <script>
-            const container = document.querySelector('.background-canvas');
-            // Chỉ chạy script nếu chưa có line nào được tạo
-            if (container && container.childElementCount === 0) {
-                for (let i = 0; i < 50; i++) {
-                    const line = document.createElement('div');
-                    line.className = 'line';
-                    line.style.top = Math.random() * 100 + 'vh';
-                    line.style.width = Math.random() * 50 + 50 + 'vw';
-                    line.style.animationDuration = (Math.random() * 20 + 20) + 's';
-                    line.style.animationDelay = Math.random() * -40 + 's';
-                    container.appendChild(line);
+            // JavaScript để tạo các ngôi sao
+            const starsContainer = document.querySelector('.stars-container');
+            if (starsContainer && starsContainer.childElementCount === 0) {
+                const numStars = 15;
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'shooting-star';
+                    star.style.top = (Math.random() * 100 - 50) + 'vh';
+                    star.style.left = (Math.random() * 100 - 50) + 'vw';
+                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    star.style.animationDelay = (Math.random() * 5) + 's';
+                    starsContainer.appendChild(star);
                 }
             }
         </script>
     </div>
     """
     st.markdown(full_css_and_js, unsafe_allow_html=True)
-    
 # ==============================================================================
 # HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.1 (ĐÃ SỬA LỖI)
 # ==============================================================================
@@ -101,7 +116,7 @@ def show_professional_welcome_page():
         </div>
         <div style="height: 100px;"></div>
         <div class="welcome-description">
-             <p>👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.</p>
+             <p>Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.</p>
              <p style="background-color: #F1F5F9; padding: 0.5rem; border-radius: 0.5rem; color: #334155;">Ví dụ về một đường link hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
         </div>
     </div>
