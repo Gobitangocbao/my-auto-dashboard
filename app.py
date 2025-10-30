@@ -20,7 +20,7 @@ def show_welcome_page():
     """
     welcome_html = """
     <style>
-        /* --- Style riêng cho hiệu ứng và trang chào mừng --- */
+        /* === Hiệu ứng Nền Sao Chổi === */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
@@ -36,6 +36,7 @@ def show_welcome_page():
             filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
         }
 
+        /* === Style cho Trang Chào mừng === */
         @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; }
         .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
@@ -71,8 +72,6 @@ def show_welcome_page():
             Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút. Ứng dụng này sử dụng một chuỗi các Agent AI thông minh để tự động hóa toàn bộ quy trình, từ phân tích dữ liệu đến thiết kế một dashboard chuyên nghiệp và có tính tương tác cao.
         </p>
 
-        <!-- NÚT GITHUB ĐÃ BỊ XÓA -->
-        
         <div class="mockup-frame">
             <div class="glow-effect"></div>
             <img src="https://www.launchuicomponents.com/app-dark.png" class="welcome-image" alt="Dashboard Preview">
