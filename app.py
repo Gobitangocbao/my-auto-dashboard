@@ -121,7 +121,7 @@ def glowing_border_css():
 # app.py -> Dán hàm mới này vào file của bạn, thay thế cho show_welcome_page cũ
 
 # ==============================================================================
-# HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.0
+# HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.1 (ĐÃ SỬA LỖI)
 # ==============================================================================
 def show_professional_welcome_page():
     """
@@ -129,9 +129,8 @@ def show_professional_welcome_page():
     lấy cảm hứng từ các thư viện UI hiện đại như Aceternity và LaunchUI.
     """
 
-    # --- PHẦN 1: BỘ NÃO CSS ---
-    # Toàn bộ "phép thuật" nằm ở đây. Chúng ta định nghĩa các style và animation.
-    css_style = """
+    # Gộp cả CSS và HTML vào một chuỗi lớn duy nhất
+    full_html = """
     <style>
         /* Animation cho hiệu ứng xuất hiện mềm mại */
         @keyframes appear {
@@ -155,7 +154,7 @@ def show_professional_welcome_page():
             font-size: 3.5rem; /* 56px */
             font-weight: 700;
             background: linear-gradient(90deg, #1E293B, #64748B); /* Gradient xám đậm -> xám nhạt */
-            -webkit-background-clip: text; /* Yêu cầu cho Chrome/Safari */
+            -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             animation: appear 0.5s ease-out forwards;
@@ -227,14 +226,9 @@ def show_professional_welcome_page():
             width: 100%;
             max-width: 800px;
         }
-
     </style>
-    """
-    st.markdown(css_style, unsafe_allow_html=True)
-    
-    # --- PHẦN 2: BỘ XƯƠNG HTML ---
-    # Bây giờ chúng ta sử dụng các class CSS đã định nghĩa ở trên.
-    st.markdown("""
+
+    <!-- Bắt đầu phần thân HTML -->
     <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         
@@ -258,7 +252,10 @@ def show_professional_welcome_page():
              <p style="background-color: #F1F5F9; padding: 0.5rem; border-radius: 0.5rem; color: #334155;">Ví dụ về một đường link hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """
+    
+    # DÒNG QUAN TRỌNG NHẤT LÀ ĐÂY:
+    st.markdown(full_html, unsafe_allow_html=True)
     
 # ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
