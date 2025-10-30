@@ -90,6 +90,51 @@ def apply_global_styles_and_effects():
     """
     st.markdown(full_css_and_js, unsafe_allow_html=True)
 # ==============================================================================
+# HÀM TẠO HIỆU ỨNG NỀN SAO CHỔI (CHỈ DÙNG CHO TRANG CHÀO MỪNG)
+# ==============================================================================
+def shooting_stars_background():
+    """
+    Tạo hiệu ứng nền động với các 'sao chổi' rơi xuống.
+    """
+    shooting_stars_html = """
+    <style>
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        @keyframes animStar {
+            from { transform: translate(-100px, -100px); }
+            to { transform: translate(calc(100vw + 100px), calc(100vh + 100px)); }
+        }
+        .shooting-star {
+            position: absolute; width: 2px; height: 200px;
+            background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0)); 
+            animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
+            filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
+        }
+    </style>
+    
+    <div class="stars-container">
+        <script>
+            const starsContainer = document.querySelector('.stars-container');
+            if (starsContainer && starsContainer.childElementCount === 0) {
+                const numStars = 15;
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'shooting-star';
+                    star.style.top = (Math.random() * 100 - 50) + 'vh';
+                    star.style.left = (Math.random() * 100 - 50) + 'vw';
+                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    star.style.animationDelay = (Math.random() * 5) + 's';
+                    starsContainer.appendChild(star);
+                }
+            }
+        </script>
+    </div>
+    """
+    st.markdown(shooting_stars_html, unsafe_allow_html=True)
+    
+# ==============================================================================
 # HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.1 (ĐÃ SỬA LỖI)
 # ==============================================================================
 # app.py -> Thay thế hàm show_professional_welcome_page cũ bằng hàm này
@@ -350,9 +395,18 @@ apply_global_styles_and_effects()
 dashboard_id = st.query_params.get("dashboard_id")
 
 if not dashboard_id:
-    # Vẫn gọi hàm welcome page như bình thường
+    # --- XỬ LÝ CHO TRANG CHÀO MỪNG ---
+    
+    # 1. Chỉ áp dụng hiệu ứng nền "sao chổi" cho trang này.
+    shooting_stars_background() 
+    
+    # 2. Hiển thị nội dung của trang chào mừng.
     show_professional_welcome_page() 
+    
 else:
+    # --- XỬ LÝ CHO TRANG DASHBOARD ---
+    # Nền sẽ là màu trắng (hoặc màu từ theme) bình thường, không có sao chổi.
+    
     with st.spinner('Đang tải dữ liệu và bản thiết kế từ cơ sở dữ liệu...'):
         dashboard_config, df = load_dashboard_data(dashboard_id)
 
