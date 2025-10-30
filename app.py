@@ -9,106 +9,81 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # ==============================================================================
-# HÀM HIỂN THỊ TRANG CHÀO MỪNG VỚI HIỆU ỨNG "SPARKLES" (V4.0)
+# PHẦN 1: CÁC HÀM HỖ TRỢ GIAO DIỆN (UI HELPERS)
 # ==============================================================================
+
 def show_welcome_page():
     """
-    Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng mới:
-    Hiệu ứng nền "Sparkles" (hạt lấp lánh), theme tối, và nội dung theo yêu cầu.
+    Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng:
+    Cả hiệu ứng nền sao chổi, style CSS, và nội dung HTML.
     """
-    welcome_html_and_effects = """
+    welcome_html = """
     <style>
-        /* --- Style CỐ ĐỊNH theme tối cho trang chào mừng --- */
-        body, .stApp {
-            background-color: #000000 !important; /* Nền đen tuyền */
-            color: #E0E0E0 !important;
-            overflow: hidden; /* Ngăn cuộn trang để hiệu ứng đẹp hơn */
-        }
-
-        /* === Hiệu ứng Nền "Sparkles" MỚI === */
-        .sparkles-container {
+        /* === Hiệu ứng Nền Sao Chổi === */
+        .stars-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: 1; /* Nằm ngay dưới nội dung */
-            overflow: hidden;
-            pointer-events: none; /* Cho phép click xuyên qua lớp hiệu ứng */
+            z-index: -1; overflow: hidden; pointer-events: none;
         }
-        @keyframes sparkle-effect {
-            0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        @keyframes animStar {
+            from { transform: translate(-200px, -200px); opacity: 0; }
+            to { transform: translate(calc(100vw + 200px), calc(100vh + 200px)); opacity: 1; }
         }
-        .sparkle {
-            position: absolute;
-            background-color: white;
-            border-radius: 50%;
-            animation-name: sparkle-effect;
-            animation-timing-function: ease-in-out;
-            animation-iteration-count: infinite;
+        .shooting-star {
+            position: absolute; width: 2px; height: 200px;
+            background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0));
+            animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
+            filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
         }
 
-        /* === Style cho Nội dung Trang Chào mừng === */
-        .welcome-content-container {
-            position: relative; /* Bắt buộc để z-index có hiệu lực */
-            z-index: 2; /* Nằm TRÊN lớp hiệu ứng */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            height: 90vh; /* Chiếm gần toàn bộ chiều cao màn hình */
-            padding: 2rem;
-        }
-        .welcome-title {
-            font-size: 3rem; /* 48px */
-            font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 1rem;
-        }
-        .welcome-description {
-            max-width: 600px;
-            font-size: 1.125rem; /* 18px */
-            color: #A1A1AA; /* Màu xám nhạt */
-            line-height: 1.6;
-        }
+        /* === Style cho Trang Chào mừng === */
+        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; }
+        .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
+        .welcome-description { max-width: 600px; font-size: 1.125rem; color: #475569; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
+        .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #F8FAFC; padding: 0.75rem; border: 1px solid #E2E8F0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
+        .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.15) 10%, rgba(255, 255, 255, 0) 60%); filter: blur(40px); z-index: -1; }
+        .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
     </style>
 
     <!-- HTML cho Hiệu ứng nền -->
-    <div class="sparkles-container">
+    <div class="stars-container">
         <script>
-            // Bọc script trong trình lắng nghe sự kiện để đảm bảo nó chạy đúng lúc
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.querySelector('.sparkles-container');
-                // Chỉ chạy nếu container tồn tại và chưa có hạt nào
-                if (container && container.childElementCount === 0) {
-                    const numSparkles = 80; // Số lượng hạt lấp lánh
-                    for (let i = 0; i < numSparkles; i++) {
-                        const sparkle = document.createElement('div');
-                        sparkle.className = 'sparkle';
-                        const size = Math.random() * 2 + 1; // Kích thước ngẫu nhiên (1-3px)
-                        sparkle.style.width = size + 'px';
-                        sparkle.style.height = size + 'px';
-                        sparkle.style.top = Math.random() * 100 + '%';
-                        sparkle.style.left = Math.random() * 100 + '%';
-                        sparkle.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Tốc độ lấp lánh (2-5s)
-                        sparkle.style.animationDelay = Math.random() * 5 + 's';
-                        container.appendChild(sparkle);
-                    }
+            const starsContainer = document.querySelector('.stars-container');
+            if (starsContainer && starsContainer.childElementCount === 0) {
+                const numStars = 20;
+                for (let i = 0; i < numStars; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'shooting-star';
+                    star.style.top = (Math.random() * 150 - 50) + 'vh';
+                    star.style.left = (Math.random() * 150 - 50) + 'vw';
+                    star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    star.style.animationDelay = (Math.random() * 3) + 's';
+                    starsContainer.appendChild(star);
                 }
-            });
+            }
         </script>
     </div>
 
     <!-- HTML cho Nội dung Trang -->
-    <div class="welcome-content-container">
+    <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         <p class="welcome-description">
             Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút. Ứng dụng này sử dụng một chuỗi các Agent AI thông minh để tự động hóa toàn bộ quy trình.
         </p>
+        <div class="mockup-frame">
+            <div class="glow-effect"></div>
+            <img src="https://www.launchuicomponents.com/app-dark.png" class="welcome-image" alt="Dashboard Preview">
+        </div>
+        <div style="height: 100px;"></div>
+        <div class="welcome-description">
+             <p>👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn.</p>
+             <p style="background-color: #F1F5F9; padding: 0.5rem; border-radius: 0.5rem; color: #334155;">Ví dụ URL hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
+        </div>
     </div>
     """
-    st.markdown(welcome_html_and_effects, unsafe_allow_html=True)
-    
+    st.markdown(welcome_html, unsafe_allow_html=True)
+
 def generate_dashboard_theme_css(theme_config):
-    # Hàm này không thay đổi
     typography = theme_config.get('typography', {})
     font_family = typography.get('fontFamily', 'sans-serif')
     header_size = typography.get('headerSize', '28px')
@@ -142,7 +117,9 @@ def generate_dashboard_theme_css(theme_config):
 # ==============================================================================
 # PHẦN 2: CÁC HÀM XỬ LÝ DỮ LIỆU VÀ "CỖ MÁY VẼ"
 # ==============================================================================
+
 st.set_page_config(layout="wide", page_title="AI-Generated Dashboard")
+
 @st.cache_resource
 def init_connection():
     try:
@@ -150,8 +127,11 @@ def init_connection():
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
     except Exception as e:
+        st.error(f"Lỗi kết nối Supabase. Vui lòng kiểm tra file Secrets. Lỗi: {e}")
         return None
+
 supabase = init_connection()
+
 @st.cache_data(ttl=300)
 def load_dashboard_data(_dashboard_id):
     if not _dashboard_id or not supabase: return None, None
@@ -167,10 +147,12 @@ def load_dashboard_data(_dashboard_id):
         for col in df.columns:
             if 'date' in col or 'time' in col:
                 df[col] = pd.to_datetime(df[col], errors='coerce')
+                
         return dashboard_config, df
     except Exception as e:
         st.error(f"Lỗi khi tải dữ liệu cho dashboard ID '{_dashboard_id}'. Lỗi: {e}")
         return None, None
+
 def render_dashboard(config, df):
     # Áp dụng theme CSS cho dashboard
     for element in config:
@@ -181,6 +163,7 @@ def render_dashboard(config, df):
     # Render các thành phần UI
     for element in config:
         el_type = element.get("type")
+
         if el_type == "header": st.header(element.get("text", ""))
         elif el_type == "markdown": st.markdown(element.get("text", ""))
         elif el_type == "metric": st.metric(label=element.get("label", ""), value=f"{df[element.get('column')].sum():,}")
@@ -196,22 +179,21 @@ def render_dashboard(config, df):
         elif el_type == "table":
             st.subheader(element.get("title", "Dữ liệu chi tiết"))
             st.dataframe(df)
+        # Các loại biểu đồ khác có thể thêm vào đây
             
 # ==============================================================================
-# PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION)
+# PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION) - PHIÊN BẢN CUỐI CÙNG
 # ==============================================================================
 
-if not supabase:
-    st.error("Lỗi kết nối Supabase. Vui lòng kiểm tra lại cấu hình Secrets trên Streamlit Cloud.")
-else:
-    dashboard_id = st.query_params.get("dashboard_id")
-    if not dashboard_id:
-        show_welcome_page()
-    else:
-        with st.spinner('Đang tải dữ liệu và bản thiết kế...'):
-            dashboard_config, df = load_dashboard_data(dashboard_id)
+dashboard_id = st.query_params.get("dashboard_id")
 
-        if dashboard_config and df is not None and not df.empty:
-            render_dashboard(dashboard_config, df)
-        else:
-            st.error(f"Rất tiếc, không thể tải được dashboard với ID: `{dashboard_id}`. Vui lòng kiểm tra lại ID.")
+if not dashboard_id:
+    show_welcome_page()
+else:
+    with st.spinner('Đang tải dữ liệu và bản thiết kế...'):
+        dashboard_config, df = load_dashboard_data(dashboard_id)
+
+    if dashboard_config and df is not None and not df.empty:
+        render_dashboard(dashboard_config, df)
+    else:
+        st.error(f"Rất tiếc, không thể tải được dashboard với ID: `{dashboard_id}`. Vui lòng kiểm tra lại ID hoặc đảm bảo dashboard đã được tạo thành công.")
