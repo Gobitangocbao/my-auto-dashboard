@@ -118,6 +118,43 @@ def glowing_border_css():
     </style>
     """
     st.markdown(css_code, unsafe_allow_html=True)
+# ==============================================================================
+# HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP
+# ==============================================================================
+def show_welcome_page():
+    """
+    Tạo một trang chào mừng chuyên nghiệp và bắt mắt, tận dụng các hiệu ứng CSS đã có.
+    """
+    
+    # Sử dụng st.columns để chia bố cục trang thành 2 cột, 1 hẹp và 1 rộng
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        # Cột bên trái: Sử dụng markdown để tạo một thẻ phát sáng chứa các icon và thông điệp ngắn
+        st.markdown("""
+        <div class="glowing-card">
+            <div style="text-align: center;">
+                <h3>✨ Our Features</h3>
+                <p>🚀 Automated Design</p>
+                <p>🎨 Multiple Concepts</p>
+                <p>💡 Interactive Visuals</p>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        # Cột bên phải: Chứa nội dung chính
+        st.title("Chào mừng đến với Trình tạo Dashboard bằng AI")
+        st.subheader("Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút.")
+        
+        st.markdown("""
+        Đây là một ứng dụng có khả năng tự động render các dashboard dựa trên thiết kế được tạo bởi AI. 
+        Toàn bộ quy trình, từ việc hiểu dữ liệu đến thiết kế UI/UX và tạo ra sản phẩm cuối cùng, đều được thực hiện bởi một chuỗi các Agent thông minh.
+        """)
+        
+        st.info("👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.")
+        
+        st.warning("Ví dụ về một đường link hợp lệ: `/?dashboard_id=dash-abc-123`")    
     
 # ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
@@ -336,11 +373,10 @@ glowing_border_css() # <-- Dòng mới bạn vừa thêm
 dashboard_id = st.query_params.get("dashboard_id")
 
 if not dashboard_id:
-    st.title("🚀 Chào mừng đến với Trình tạo Dashboard bằng AI")
-    st.markdown("Đây là một ứng dụng có khả năng tự động render các dashboard dựa trên thiết kế được tạo bởi AI.")
-    st.info("Để xem một dashboard, vui lòng truy cập một URL có chứa `dashboard_id` (ví dụ: `/?dashboard_id=abc-123`). ID này sẽ được tạo tự động bởi hệ thống N8N sau khi bạn yêu cầu.")
+    # Chỉ cần gọi hàm mới của chúng ta ở đây!
+    show_welcome_page()
 else:
-    # Bắt đầu quá trình tải và vẽ dashboard
+    # Phần còn lại để xử lý và vẽ dashboard không thay đổi
     with st.spinner('Đang tải dữ liệu và bản thiết kế từ cơ sở dữ liệu...'):
         dashboard_config, df = load_dashboard_data(dashboard_id)
 
