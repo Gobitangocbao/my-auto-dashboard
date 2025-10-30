@@ -9,88 +9,103 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # ==============================================================================
-# HÀM HIỂN THỊ TRANG CHÀO MỪNG VỚI HIỆU ỨNG SAO CHỔI (PHIÊN BẢN DARK MODE)
+# HÀM HIỂN THỊ TRANG CHÀO MỪNG VỚI HIỆU ỨNG "SPARKLES" (V4.0)
 # ==============================================================================
 def show_welcome_page():
     """
-    Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng trong giao diện tối (dark mode).
-    ĐÃ SỬA LỖI LOGIC JAVASCRIPT ĐỂ ĐẢM BẢO HIỆU ỨNG CHẠY ĐÚNG.
+    Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng mới:
+    Hiệu ứng nền "Sparkles" (hạt lấp lánh), theme tối, và nội dung theo yêu cầu.
     """
-    welcome_html = """
+    welcome_html_and_effects = """
     <style>
-        /* === Style cố định theme tối cho trang chào mừng === */
-        /* Streamlit có thể có nền mặc định riêng, ghi đè nó */
+        /* --- Style CỐ ĐỊNH theme tối cho trang chào mừng --- */
         body, .stApp {
-            background-color: #0A0A0E !important;
+            background-color: #000000 !important; /* Nền đen tuyền */
             color: #E0E0E0 !important;
+            overflow: hidden; /* Ngăn cuộn trang để hiệu ứng đẹp hơn */
         }
 
-        /* === Hiệu ứng Nền Sao Chổi (phiên bản cho nền tối) === */
-        .stars-container {
+        /* === Hiệu ứng Nền "Sparkles" MỚI === */
+        .sparkles-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; overflow: hidden; pointer-events: none;
+            z-index: 1; /* Nằm ngay dưới nội dung */
+            overflow: hidden;
+            pointer-events: none; /* Cho phép click xuyên qua lớp hiệu ứng */
         }
-        @keyframes animStar {
-            from { transform: translate(-200px, -200px); opacity: 0; }
-            to { transform: translate(calc(100vw + 200px), calc(100vh + 200px)); opacity: 1; }
+        @keyframes sparkle-effect {
+            0%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
         }
-        .shooting-star {
-            position: absolute; width: 2px; height: 150px;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
-            animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+        .sparkle {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation-name: sparkle-effect;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
         }
 
-        /* === Style cho Trang Chào mừng (phiên bản cho nền tối) === */
-        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; }
-        .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #FFFFFF, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
-        .welcome-description { max-width: 600px; font-size: 1.125rem; color: #A1A1AA; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
-        .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #1F2937; padding: 0.75rem; border: 1px solid #374151; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
-        .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(0, 128, 255, 0.2) 10%, rgba(0,0,0,0) 60%); filter: blur(40px); z-index: -1; }
-        .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
+        /* === Style cho Nội dung Trang Chào mừng === */
+        .welcome-content-container {
+            position: relative; /* Bắt buộc để z-index có hiệu lực */
+            z-index: 2; /* Nằm TRÊN lớp hiệu ứng */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 90vh; /* Chiếm gần toàn bộ chiều cao màn hình */
+            padding: 2rem;
+        }
+        .welcome-title {
+            font-size: 3rem; /* 48px */
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+        }
+        .welcome-description {
+            max-width: 600px;
+            font-size: 1.125rem; /* 18px */
+            color: #A1A1AA; /* Màu xám nhạt */
+            line-height: 1.6;
+        }
     </style>
 
-    <div class="stars-container">
+    <!-- HTML cho Hiệu ứng nền -->
+    <div class="sparkles-container">
         <script>
-            // >>>>>>>>> THAY ĐỔI QUAN TRỌNG NHẤT Ở ĐÂY <<<<<<<<<
-            // Bọc toàn bộ script trong một trình lắng nghe sự kiện DOMContentLoaded
-            // để đảm bảo nó chỉ chạy sau khi trang đã được dựng xong.
+            // Bọc script trong trình lắng nghe sự kiện để đảm bảo nó chạy đúng lúc
             document.addEventListener('DOMContentLoaded', function() {
-                const starsContainer = document.querySelector('.stars-container');
-                if (starsContainer && starsContainer.childElementCount === 0) {
-                    const numStars = 15;
-                    for (let i = 0; i < numStars; i++) {
-                        const star = document.createElement('div');
-                        star.className = 'shooting-star';
-                        star.style.top = (Math.random() * 150 - 50) + 'vh';
-                        star.style.left = (Math.random() * 150 - 50) + 'vw';
-                        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                        star.style.animationDelay = (Math.random() * 5) + 's';
-                        starsContainer.appendChild(star);
+                const container = document.querySelector('.sparkles-container');
+                // Chỉ chạy nếu container tồn tại và chưa có hạt nào
+                if (container && container.childElementCount === 0) {
+                    const numSparkles = 80; // Số lượng hạt lấp lánh
+                    for (let i = 0; i < numSparkles; i++) {
+                        const sparkle = document.createElement('div');
+                        sparkle.className = 'sparkle';
+                        const size = Math.random() * 2 + 1; // Kích thước ngẫu nhiên (1-3px)
+                        sparkle.style.width = size + 'px';
+                        sparkle.style.height = size + 'px';
+                        sparkle.style.top = Math.random() * 100 + '%';
+                        sparkle.style.left = Math.random() * 100 + '%';
+                        sparkle.style.animationDuration = (Math.random() * 3 + 2) + 's'; // Tốc độ lấp lánh (2-5s)
+                        sparkle.style.animationDelay = Math.random() * 5 + 's';
+                        container.appendChild(sparkle);
                     }
                 }
             });
         </script>
     </div>
 
-    <div class="welcome-container">
+    <!-- HTML cho Nội dung Trang -->
+    <div class="welcome-content-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         <p class="welcome-description">
             Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút. Ứng dụng này sử dụng một chuỗi các Agent AI thông minh để tự động hóa toàn bộ quy trình.
         </p>
-        <div class="mockup-frame">
-            <div class="glow-effect"></div>
-            <img src="https://www.launchuicomponents.com/app-dark.png" class="welcome-image" alt="Dashboard Preview">
-        </div>
-        <div style="height: 100px;"></div>
-        <div class="welcome-description">
-             <p>👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn.</p>
-             <p style="background-color: #1F2937; padding: 0.5rem; border-radius: 0.5rem; color: #9CA3AF;">Ví dụ URL hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
-        </div>
     </div>
     """
-    st.markdown(welcome_html, unsafe_allow_html=True)
+    st.markdown(welcome_html_and_effects, unsafe_allow_html=True)
     
 def generate_dashboard_theme_css(theme_config):
     # Hàm này không thay đổi
