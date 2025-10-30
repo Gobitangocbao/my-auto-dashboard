@@ -9,253 +9,117 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # ==============================================================================
-# KHỐI CODE TẠO HIỆU ỨNG NỀN ĐỘNG BẰNG CSS
+# HÀM DUY NHẤT ĐỂ QUẢN LÝ TẤT CẢ CÁC STYLE VÀ HIỆU ỨNG
 # ==============================================================================
-def animated_background():
-    css_code = """
+def apply_global_styles_and_effects():
+    """
+    Hàm này gộp tất cả CSS và JS cần thiết cho toàn bộ ứng dụng và "tiêm" chúng một lần duy nhất.
+    """
+    
+    # Mã CSS gộp từ cả hai hiệu ứng
+    full_css_and_js = """
     <style>
-        /* CSS để tạo một canvas trống nằm dưới cùng */
+        /* === Hiệu ứng Nền Động (animated_background) === */
         .background-canvas {
-            position: fixed; /* Cố định vị trí */
-            top: 0;
-            left: 0;
-            width: 100vw; /* Chiếm toàn bộ chiều rộng */
-            height: 100vh; /* Chiếm toàn bộ chiều cao */
-            z-index: -1;  /* ĐÂY LÀ ĐIỀU QUAN TRỌNG NHẤT: Đảm bảo nó nằm dưới mọi thứ khác */
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden;
         }
-        
-        /* CSS cho các đường kẻ động */
         @keyframes move {
-            0% {
-                transform: translateX(0);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
+            100% { transform: translateX(-100%); }
         }
         .line {
-            position: absolute;
-            height: 1px;
+            position: absolute; height: 1px;
             background: linear-gradient(90deg, rgba(200,200,200,0), rgba(200,200,200,0.5), rgba(200,200,200,0));
             animation: move linear infinite;
+        }
+        
+        /* === Hiệu ứng Viền Phát sáng (glowing_border_css) === */
+        @keyframes rotate_glow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .glowing-card {
+            position: relative; background-color: #1a1a1a; border-radius: 1.25rem;
+            padding: 2rem; margin-bottom: 1.5rem; overflow: hidden;
+        }
+        .glowing-card::before {
+            content: ''; position: absolute; left: -2px; top: -2px;
+            width: calc(100% + 4px); height: calc(100% + 4px);
+            background: conic-gradient(from 180deg at 50% 50%, #DD7BBB 0%, #D79F1E 25%, #5A922C 50%, #4C7894 75%, #DD7BBB 100%);
+            z-index: 1; animation: rotate_glow 4s linear infinite;
+        }
+        .glowing-card > div {
+            position: relative; z-index: 2; background-color: inherit;
+            padding: 1rem; border-radius: calc(1.25rem - 2px);
         }
     </style>
     
     <div class="background-canvas">
         <script>
-            // JavaScript để tạo ra nhiều đường kẻ ngẫu nhiên
             const container = document.querySelector('.background-canvas');
-            for (let i = 0; i < 50; i++) {
-                const line = document.createElement('div');
-                line.className = 'line';
-                line.style.top = Math.random() * 100 + 'vh';
-                line.style.width = Math.random() * 50 + 50 + 'vw';
-                line.style.animationDuration = (Math.random() * 20 + 20) + 's';
-                line.style.animationDelay = Math.random() * -40 + 's'; // Bắt đầu ở các vị trí khác nhau
-                container.appendChild(line);
+            // Chỉ chạy script nếu chưa có line nào được tạo
+            if (container && container.childElementCount === 0) {
+                for (let i = 0; i < 50; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'line';
+                    line.style.top = Math.random() * 100 + 'vh';
+                    line.style.width = Math.random() * 50 + 50 + 'vw';
+                    line.style.animationDuration = (Math.random() * 20 + 20) + 's';
+                    line.style.animationDelay = Math.random() * -40 + 's';
+                    container.appendChild(line);
+                }
             }
         </script>
     </div>
     """
-    st.markdown(css_code, unsafe_allow_html=True)
-
-# ==============================================================================
-# KHỐI CODE TẠO HIỆU ỨNG VIỀN CẦU VỒNG PHÁT SÁNG
-# ==============================================================================
-def glowing_border_css():
-    css_code = """
-    <style>
-        @keyframes rotate_glow {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
-        .glowing-card {
-            position: relative; /* Bắt buộc để định vị cho viền phát sáng */
-            background-color: #1a1a1a; /* Màu nền cho thẻ, bạn có thể thay đổi */
-            border-radius: 1.25rem; /* Bo góc giống với ví dụ */
-            padding: 2rem; /* Khoảng đệm bên trong thẻ */
-            margin-bottom: 1.5rem; /* Khoảng cách giữa các thẻ */
-            overflow: hidden; /* Cần thiết để viền không bị tràn ra ngoài */
-        }
-
-        .glowing-card::before {
-            content: '';
-            position: absolute;
-            left: -2px; /* Dịch ra ngoài một chút để không bị che */
-            top: -2px;
-            width: calc(100% + 4px); /* Lớn hơn thẻ một chút */
-            height: calc(100% + 4px);
-            
-            /* Dải màu cầu vồng */
-            background: conic-gradient(
-                from 180deg at 50% 50%,
-                #DD7BBB 0%,
-                #D79F1E 25%,
-                #5A922C 50%,
-                #4C7894 75%,
-                #DD7BBB 100%
-            );
-            
-            z-index: 1; /* Nằm ngay sau nội dung thẻ */
-            
-            /* Animation xoay tròn liên tục */
-            animation: rotate_glow 4s linear infinite;
-        }
-
-        .glowing-card > div { /* Nhắm vào container nội dung của Streamlit */
-            position: relative; /* Đảm bảo nội dung nằm trên viền */
-            z-index: 2;
-            background-color: inherit; /* Nền của nội dung giống nền thẻ */
-            padding: 1rem;
-            border-radius: calc(1.25rem - 2px); /* Bo góc nhỏ hơn viền một chút */
-        }
-    </style>
-    """
-    st.markdown(css_code, unsafe_allow_html=True)
-# app.py -> Dán hàm mới này vào file của bạn, thay thế cho show_welcome_page cũ
-
+    st.markdown(full_css_and_js, unsafe_allow_html=True)
+    
 # ==============================================================================
 # HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.1 (ĐÃ SỬA LỖI)
 # ==============================================================================
+# app.py -> Thay thế hàm show_professional_welcome_page cũ bằng hàm này
+
 def show_professional_welcome_page():
     """
-    Tạo một trang chào mừng thanh lịch, chuyên nghiệp, và hiện đại,
-    lấy cảm hứng từ các thư viện UI hiện đại như Aceternity và LaunchUI.
+    Hàm này CHỈ chứa nội dung HTML của trang chào mừng.
+    Các style sẽ được áp dụng bởi hàm global.
     """
-
-    # Gộp cả CSS và HTML vào một chuỗi lớn duy nhất
-    full_html = """
-    <style>
-        /* Animation cho hiệu ứng xuất hiện mềm mại */
-        @keyframes appear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Container chính để căn giữa mọi thứ */
-        .welcome-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding-top: 3rem;
-            padding-bottom: 3rem;
-        }
-
-        /* Tiêu đề chính với hiệu ứng Gradient */
-        .welcome-title {
-            font-size: 3.5rem; /* 56px */
-            font-weight: 700;
-            background: linear-gradient(90deg, #1E293B, #64748B); /* Gradient xám đậm -> xám nhạt */
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: appear 0.5s ease-out forwards;
-            padding-bottom: 1rem;
-        }
-
-        /* Đoạn mô tả phụ */
-        .welcome-description {
-            max-width: 600px;
-            font-size: 1.125rem; /* 18px */
-            color: #475569; /* Màu xám nhạt hơn, tương phản vừa phải */
-            animation: appear 0.5s ease-out 100ms forwards;
-            opacity: 0; /* Ẩn đi lúc đầu để animation hoạt động */
-            margin-bottom: 2rem;
-        }
-        
-        /* Container cho các nút bấm */
-        .welcome-buttons {
-            display: flex;
-            gap: 1rem;
-            animation: appear 0.5s ease-out 300ms forwards;
-            opacity: 0;
-        }
-
-        /* Style cho nút bấm (dùng thẻ <a>) */
-        .welcome-buttons a {
-            text-decoration: none;
-            color: #FFFFFF;
-            background-color: #0F172A; /* Màu nền đen-xám */
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        
-        .welcome-buttons a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        /* Khung mockup cho hình ảnh */
-        .mockup-frame {
-            position: relative; /* Bắt buộc để đặt hiệu ứng glow */
-            margin-top: 4rem;
-            border-radius: 0.75rem; /* bo góc */
-            background: #F8FAFC;
-            padding: 0.75rem;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: appear 0.5s ease-out 700ms forwards;
-            opacity: 0;
-        }
-        
-        /* Hiệu ứng ánh sáng lan tỏa phía sau hình ảnh */
-        .glow-effect {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.15) 10%, rgba(255, 255, 255, 0) 60%);
-            filter: blur(40px);
-            z-index: -1;
-        }
-
-        .welcome-image {
-            border-radius: 0.25rem;
-            width: 100%;
-            max-width: 800px;
-        }
-    </style>
-
+    # CHỈ còn lại phần thân HTML
+    html_body = """
     <!-- Bắt đầu phần thân HTML -->
     <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
-        
         <p class="welcome-description">
             Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút. Ứng dụng này sử dụng một chuỗi các Agent AI thông minh để tự động hóa toàn bộ quy trình, từ phân tích dữ liệu đến thiết kế một dashboard chuyên nghiệp và có tính tương tác cao.
         </p>
-
         <div class="welcome-buttons">
             <a href="https://github.com/Gobitangocbao/my-auto-dashboard" target="_blank">GitHub</a>
         </div>
-        
         <div class="mockup-frame">
             <div class="glow-effect"></div>
             <img src="https://www.launchuicomponents.com/app-dark.png" class="welcome-image" alt="Dashboard Preview">
         </div>
-
-        <div style="height: 100px;"></div> <!-- Thêm khoảng trống ở cuối -->
-
+        <div style="height: 100px;"></div>
         <div class="welcome-description">
              <p>👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.</p>
              <p style="background-color: #F1F5F9; padding: 0.5rem; border-radius: 0.5rem; color: #334155;">Ví dụ về một đường link hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
         </div>
     </div>
+    <style> /* CSS nội bộ cho hàm này */
+        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 3rem; padding-bottom: 3rem; }
+        .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
+        .welcome-description { max-width: 600px; font-size: 1.125rem; color: #475569; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
+        .welcome-buttons { display: flex; gap: 1rem; animation: appear 0.5s ease-out 300ms forwards; opacity: 0; }
+        .welcome-buttons a { text-decoration: none; color: #FFFFFF; background-color: #0F172A; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .welcome-buttons a:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #F8FAFC; padding: 0.75rem; border: 1px solid #E2E8F0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
+        .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.15) 10%, rgba(255, 255, 255, 0) 60%); filter: blur(40px); z-index: -1; }
+        .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
+    </style>
     """
     
-    # DÒNG QUAN TRỌNG NHẤT LÀ ĐÂY:
-    st.markdown(full_html, unsafe_allow_html=True)
+    st.markdown(html_body, unsafe_allow_html=True)
     
 # ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
@@ -464,20 +328,16 @@ def render_dashboard(config, df):
 # PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION)
 # ==============================================================================
 
-# ==============================================================================
-# Gọi các hàm CSS một lần ở đây
-animated_background()
-glowing_border_css() # <-- Dòng mới bạn vừa thêm
-# ==============================================================================
+# GỌI HÀM NÀY MỘT LẦN DUY NHẤT Ở ĐÂY
+apply_global_styles_and_effects()
 
 # Lấy dashboard_id từ tham số URL
 dashboard_id = st.query_params.get("dashboard_id")
 
 if not dashboard_id:
-    # Chỉ cần gọi hàm mới và chuyên nghiệp hơn của chúng ta ở đây!
+    # Vẫn gọi hàm welcome page như bình thường
     show_professional_welcome_page() 
 else:
-    # Phần còn lại để xử lý và vẽ dashboard không thay đổi
     with st.spinner('Đang tải dữ liệu và bản thiết kế từ cơ sở dữ liệu...'):
         dashboard_config, df = load_dashboard_data(dashboard_id)
 
