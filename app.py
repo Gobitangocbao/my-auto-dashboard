@@ -14,19 +14,18 @@ import plotly.graph_objects as go
 def show_welcome_page():
     """
     Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng trong giao diện tối (dark mode).
-    - Nền đen, chữ trắng.
-    - Sao chổi màu trắng, chắc chắn sẽ hiển thị.
-    - Nút GitHub đã được xóa.
+    ĐÃ SỬA LỖI LOGIC JAVASCRIPT ĐỂ ĐẢM BẢO HIỆU ỨNG CHẠY ĐÚNG.
     """
     welcome_html = """
     <style>
-        /* --- Style CỐ ĐỊNH theme tối cho trang chào mừng --- */
+        /* === Style cố định theme tối cho trang chào mừng === */
+        /* Streamlit có thể có nền mặc định riêng, ghi đè nó */
         body, .stApp {
             background-color: #0A0A0E !important;
             color: #E0E0E0 !important;
         }
 
-        /* === Hiệu ứng Nền Sao Chổi ( phiên bản cho nền tối) === */
+        /* === Hiệu ứng Nền Sao Chổi (phiên bản cho nền tối) === */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
@@ -36,26 +35,17 @@ def show_welcome_page():
             to { transform: translate(calc(100vw + 200px), calc(100vh + 200px)); opacity: 1; }
         }
         .shooting-star {
-            position: absolute; width: 2px; height: 150px; /* Làm sao ngắn lại một chút */
-            
-            /* >>>>>>>>> THAY ĐỔI QUAN TRỌNG NHẤT Ở ĐÂY <<<<<<<<< */
-            /* Đổi màu sao chổi thành MÀU TRẮNG để nổi bật trên nền đen */
+            position: absolute; width: 2px; height: 150px;
             background: linear-gradient(45deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
-            
             animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5)); /* Đổ bóng màu trắng */
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
         }
 
         /* === Style cho Trang Chào mừng (phiên bản cho nền tối) === */
         @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; }
-        
-        /* Đổi màu gradient của tiêu đề thành trắng -> xám */
         .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #FFFFFF, #9CA3AF); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
-        
-        /* Đổi màu chữ mô tả thành màu xám nhạt */
         .welcome-description { max-width: 600px; font-size: 1.125rem; color: #A1A1AA; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
-        
         .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #1F2937; padding: 0.75rem; border: 1px solid #374151; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
         .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(0, 128, 255, 0.2) 10%, rgba(0,0,0,0) 60%); filter: blur(40px); z-index: -1; }
         .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
@@ -63,19 +53,24 @@ def show_welcome_page():
 
     <div class="stars-container">
         <script>
-            const starsContainer = document.querySelector('.stars-container');
-            if (starsContainer && starsContainer.childElementCount === 0) {
-                const numStars = 15;
-                for (let i = 0; i < numStars; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'shooting-star';
-                    star.style.top = (Math.random() * 150 - 50) + 'vh';
-                    star.style.left = (Math.random() * 150 - 50) + 'vw';
-                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    star.style.animationDelay = (Math.random() * 5) + 's';
-                    starsContainer.appendChild(star);
+            // >>>>>>>>> THAY ĐỔI QUAN TRỌNG NHẤT Ở ĐÂY <<<<<<<<<
+            // Bọc toàn bộ script trong một trình lắng nghe sự kiện DOMContentLoaded
+            // để đảm bảo nó chỉ chạy sau khi trang đã được dựng xong.
+            document.addEventListener('DOMContentLoaded', function() {
+                const starsContainer = document.querySelector('.stars-container');
+                if (starsContainer && starsContainer.childElementCount === 0) {
+                    const numStars = 15;
+                    for (let i = 0; i < numStars; i++) {
+                        const star = document.createElement('div');
+                        star.className = 'shooting-star';
+                        star.style.top = (Math.random() * 150 - 50) + 'vh';
+                        star.style.left = (Math.random() * 150 - 50) + 'vw';
+                        star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                        star.style.animationDelay = (Math.random() * 5) + 's';
+                        starsContainer.appendChild(star);
+                    }
                 }
-            }
+            });
         </script>
     </div>
 
@@ -96,7 +91,7 @@ def show_welcome_page():
     </div>
     """
     st.markdown(welcome_html, unsafe_allow_html=True)
-
+    
 def generate_dashboard_theme_css(theme_config):
     # Hàm này không thay đổi
     typography = theme_config.get('typography', {})
