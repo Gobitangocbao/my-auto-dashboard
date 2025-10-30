@@ -16,7 +16,7 @@ def show_welcome_page():
     """
     Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng:
     Cả hiệu ứng nền sao chổi, style CSS, và nội dung HTML.
-    ĐÃ SỬA LỖI MÀU SẮC CỦA SAO CHỔI.
+    ĐÃ SỬA LỖI MÀU SẮC CỦA SAO CHỔI ĐỂ CÓ ĐỘ TƯƠNG PHẢN CAO.
     """
     welcome_html = """
     <style>
@@ -32,14 +32,12 @@ def show_welcome_page():
         .shooting-star {
             position: absolute; width: 2px; height: 200px;
             
-            /* >>>>>>>>> THAY ĐỔI QUAN TRỌNG Ở ĐÂY <<<<<<<<< */
-            /* Đổi màu sao chổi thành màu xám đậm để có độ tương phản trên nền trắng */
-            background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+            /* >>>>>>>>> THAY ĐỔI QUAN TRỌNG NHẤT Ở ĐÂY <<<<<<<<< */
+            /* Đổi màu sao chổi thành MÀU XÁM ĐẬM để có độ tương phản cao trên nền trắng */
+            background: linear-gradient(45deg, rgba(50, 50, 50, 0.4), rgba(50, 50, 50, 0)); 
             
             animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
-            
-            /* Đổi cả màu của hiệu ứng đổ bóng */
-            filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
+            filter: drop-shadow(0 0 4px rgba(50, 50, 50, 0.2));
         }
 
         /* === Style cho Trang Chào mừng (Giữ nguyên) === */
@@ -52,7 +50,6 @@ def show_welcome_page():
         .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
     </style>
 
-    <!-- HTML cho Hiệu ứng nền (Giữ nguyên) -->
     <div class="stars-container">
         <script>
             const starsContainer = document.querySelector('.stars-container');
@@ -71,7 +68,6 @@ def show_welcome_page():
         </script>
     </div>
 
-    <!-- HTML cho Nội dung Trang (Giữ nguyên) -->
     <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         <p class="welcome-description">
@@ -91,6 +87,7 @@ def show_welcome_page():
     st.markdown(welcome_html, unsafe_allow_html=True)
 
 def generate_dashboard_theme_css(theme_config):
+    # Hàm này không thay đổi
     typography = theme_config.get('typography', {})
     font_family = typography.get('fontFamily', 'sans-serif')
     header_size = typography.get('headerSize', '28px')
@@ -124,9 +121,7 @@ def generate_dashboard_theme_css(theme_config):
 # ==============================================================================
 # PHẦN 2: CÁC HÀM XỬ LÝ DỮ LIỆU VÀ "CỖ MÁY VẼ"
 # ==============================================================================
-
 st.set_page_config(layout="wide", page_title="AI-Generated Dashboard")
-
 @st.cache_resource
 def init_connection():
     try:
@@ -134,11 +129,8 @@ def init_connection():
         key = st.secrets["SUPABASE_KEY"]
         return create_client(url, key)
     except Exception as e:
-        st.error(f"Lỗi kết nối Supabase. Vui lòng kiểm tra file Secrets. Lỗi: {e}")
         return None
-
 supabase = init_connection()
-
 @st.cache_data(ttl=300)
 def load_dashboard_data(_dashboard_id):
     if not _dashboard_id or not supabase: return None, None
@@ -154,12 +146,10 @@ def load_dashboard_data(_dashboard_id):
         for col in df.columns:
             if 'date' in col or 'time' in col:
                 df[col] = pd.to_datetime(df[col], errors='coerce')
-                
         return dashboard_config, df
     except Exception as e:
         st.error(f"Lỗi khi tải dữ liệu cho dashboard ID '{_dashboard_id}'. Lỗi: {e}")
         return None, None
-
 def render_dashboard(config, df):
     # Áp dụng theme CSS cho dashboard
     for element in config:
@@ -170,7 +160,6 @@ def render_dashboard(config, df):
     # Render các thành phần UI
     for element in config:
         el_type = element.get("type")
-
         if el_type == "header": st.header(element.get("text", ""))
         elif el_type == "markdown": st.markdown(element.get("text", ""))
         elif el_type == "metric": st.metric(label=element.get("label", ""), value=f"{df[element.get('column')].sum():,}")
@@ -186,21 +175,22 @@ def render_dashboard(config, df):
         elif el_type == "table":
             st.subheader(element.get("title", "Dữ liệu chi tiết"))
             st.dataframe(df)
-        # Các loại biểu đồ khác có thể thêm vào đây
             
 # ==============================================================================
-# PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION) - PHIÊN BẢN CUỐI CÙNG
+# PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION)
 # ==============================================================================
 
-dashboard_id = st.query_params.get("dashboard_id")
-
-if not dashboard_id:
-    show_welcome_page()
+if not supabase:
+    st.error("Lỗi kết nối Supabase. Vui lòng kiểm tra lại cấu hình Secrets trên Streamlit Cloud.")
 else:
-    with st.spinner('Đang tải dữ liệu và bản thiết kế...'):
-        dashboard_config, df = load_dashboard_data(dashboard_id)
-
-    if dashboard_config and df is not None and not df.empty:
-        render_dashboard(dashboard_config, df)
+    dashboard_id = st.query_params.get("dashboard_id")
+    if not dashboard_id:
+        show_welcome_page()
     else:
-        st.error(f"Rất tiếc, không thể tải được dashboard với ID: `{dashboard_id}`. Vui lòng kiểm tra lại ID hoặc đảm bảo dashboard đã được tạo thành công.")
+        with st.spinner('Đang tải dữ liệu và bản thiết kế...'):
+            dashboard_config, df = load_dashboard_data(dashboard_id)
+
+        if dashboard_config and df is not None and not df.empty:
+            render_dashboard(dashboard_config, df)
+        else:
+            st.error(f"Rất tiếc, không thể tải được dashboard với ID: `{dashboard_id}`. Vui lòng kiểm tra lại ID.")
