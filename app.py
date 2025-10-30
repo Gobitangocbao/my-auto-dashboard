@@ -11,175 +11,118 @@ import plotly.graph_objects as go
 # app.py -> Thay thế hoàn toàn hàm cũ của bạn bằng hàm mới này
 
 # ==============================================================================
-# HÀM DUY NHẤT ĐỂ QUẢN LÝ TẤT CẢ CÁC STYLE VÀ HIỆU ỨNG V3.0 (ĐÃ SỬA LỖI)
+# HÀM ÁP DỤNG CÁC STYLE CHUNG (CHO CẢ APP)
 # ==============================================================================
-def apply_global_styles_and_effects():
+def apply_common_styles():
     """
-    Hàm này gộp tất cả CSS và JS cần thiết cho toàn bộ ứng dụng và "tiêm" chúng một lần duy nhất.
-    Phiên bản này sử dụng hiệu ứng "sao chổi" cho nền.
+    Hàm này chỉ chứa các style có thể tái sử dụng ở bất kỳ đâu,
+    ví dụ như hiệu ứng viền phát sáng cho các thẻ dashboard.
     """
-    
-    # Mã CSS và JS gộp cho tất cả các hiệu ứng toàn cục
-    full_css_and_js = """
+    common_css = """
     <style>
-        /* === Hiệu ứng Nền Sao Chổi MỚI (shooting_stars_background) === */
-        .stars-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; overflow: hidden; pointer-events: none;
-        }
-        @keyframes animStar {
-            from {
-                transform: translate(-100px, -100px);
-            }
-            to {
-                transform: translate(calc(100vw + 100px), calc(100vh + 100px));
-            }
-        }
-        .shooting-star {
-            position: absolute;
-            width: 2px;
-            height: 200px;
-            /* Thay đổi màu nền để hiển thị tốt trên nền trắng */
-            background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0)); 
-            animation-name: animStar;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-            filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
-        }
-        
         /* === Hiệu ứng Viền Phát sáng (glowing_border_css) === */
-        /* Giữ nguyên như cũ */
         @keyframes rotate_glow {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         .glowing-card {
             position: relative; background-color: #1a1a1a; border-radius: 1.25rem;
-            padding: 2rem; margin-bottom: 1.5rem; overflow: hidden;
+            margin-bottom: 1.5rem; overflow: hidden; color: #FFFFFF;
+        }
+        .glowing-card > div { /* Nhắm vào container của Streamlit bên trong */
+            padding: 2rem !important; /* Ghi đè padding mặc định */
+        }
+        .glowing-card h3, .glowing-card p, .glowing-card * {
+             color: #FFFFFF !important;
         }
         .glowing-card::before {
             content: ''; position: absolute; left: -2px; top: -2px;
             width: calc(100% + 4px); height: calc(100% + 4px);
             background: conic-gradient(from 180deg at 50% 50%, #DD7BBB 0%, #D79F1E 25%, #5A922C 50%, #4C7894 75%, #DD7BBB 100%);
-            z-index: 1; animation: rotate_glow 4s linear infinite;
-        }
-        .glowing-card > div {
-            position: relative; z-index: 2; background-color: inherit;
-            padding: 1rem; border-radius: calc(1.25rem - 2px);
+            z-index: -1; animation: rotate_glow 4s linear infinite;
         }
     </style>
-    
-    <div class="stars-container">
-        <script>
-            // JavaScript để tạo các ngôi sao
-            const starsContainer = document.querySelector('.stars-container');
-            if (starsContainer && starsContainer.childElementCount === 0) {
-                const numStars = 15;
-                for (let i = 0; i < numStars; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'shooting-star';
-                    star.style.top = (Math.random() * 100 - 50) + 'vh';
-                    star.style.left = (Math.random() * 100 - 50) + 'vw';
-                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    star.style.animationDelay = (Math.random() * 5) + 's';
-                    starsContainer.appendChild(star);
-                }
-            }
-        </script>
-    </div>
     """
-    st.markdown(full_css_and_js, unsafe_allow_html=True)
+    st.markdown(common_css, unsafe_allow_html=True)
+
+
 # ==============================================================================
-# HÀM TẠO HIỆU ỨNG NỀN SAO CHỔI (CHỈ DÙNG CHO TRANG CHÀO MỪNG)
+# HÀM HIỂN THỊ TRANG CHÀO MỪNG VỚI HIỆU ỨNG SAO CHỔI (V3.0)
 # ==============================================================================
-def shooting_stars_background():
+def show_welcome_page_with_shooting_stars():
     """
-    Tạo hiệu ứng nền động với các 'sao chổi' rơi xuống.
+    Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng: 
+    Cả hiệu ứng nền và nội dung HTML.
+    NÚT GITHUB ĐÃ ĐƯỢC XÓA BỎ.
     """
-    shooting_stars_html = """
+    welcome_html = """
     <style>
+        /* --- Style riêng cho hiệu ứng và trang chào mừng --- */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
         }
         @keyframes animStar {
-            from { transform: translate(-100px, -100px); }
-            to { transform: translate(calc(100vw + 100px), calc(100vh + 100px)); }
+            from { transform: translate(-200px, -200px); }
+            to { transform: translate(calc(100vw + 200px), calc(100vh + 200px)); }
         }
         .shooting-star {
             position: absolute; width: 2px; height: 200px;
             background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0)); 
-            animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
+            animation: animStar linear infinite;
             filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
         }
+        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 3rem; padding-bottom: 3rem; }
+        .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
+        .welcome-description { max-width: 600px; font-size: 1.125rem; color: #475569; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
+        .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #F8FAFC; padding: 0.75rem; border: 1px solid #E2E8F0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
+        .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.15) 10%, rgba(255, 255, 255, 0) 60%); filter: blur(40px); z-index: -1; }
+        .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
     </style>
     
+    <!-- Phần thân HTML cho trang chào mừng và hiệu ứng sao chổi -->
     <div class="stars-container">
         <script>
             const starsContainer = document.querySelector('.stars-container');
             if (starsContainer && starsContainer.childElementCount === 0) {
-                const numStars = 15;
+                const numStars = 20;
                 for (let i = 0; i < numStars; i++) {
                     const star = document.createElement('div');
                     star.className = 'shooting-star';
-                    star.style.top = (Math.random() * 100 - 50) + 'vh';
-                    star.style.left = (Math.random() * 100 - 50) + 'vw';
-                    star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    star.style.animationDelay = (Math.random() * 5) + 's';
+                    star.style.top = (Math.random() * 150 - 50) + 'vh'; // Bắt đầu từ vị trí cao hơn
+                    star.style.left = (Math.random() * 150 - 50) + 'vw';
+                    star.style.animationDuration = (Math.random() * 2 + 1) + 's'; // Rơi nhanh hơn (1-3s)
+                    star.style.animationDelay = (Math.random() * 3) + 's';
                     starsContainer.appendChild(star);
                 }
             }
         </script>
     </div>
-    """
-    st.markdown(shooting_stars_html, unsafe_allow_html=True)
-    
-# ==============================================================================
-# HÀM HIỂN THỊ TRANG CHÀO MỪNG CHUYÊN NGHIỆP V2.1 (ĐÃ SỬA LỖI)
-# ==============================================================================
-# app.py -> Thay thế hàm show_professional_welcome_page cũ bằng hàm này
 
-def show_professional_welcome_page():
-    """
-    Hàm này CHỈ chứa nội dung HTML của trang chào mừng.
-    Các style sẽ được áp dụng bởi hàm global.
-    """
-    # CHỈ còn lại phần thân HTML
-    html_body = """
-    <!-- Bắt đầu phần thân HTML -->
     <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         <p class="welcome-description">
             Biến dữ liệu của bạn thành câu chuyện chỉ trong vài phút. Ứng dụng này sử dụng một chuỗi các Agent AI thông minh để tự động hóa toàn bộ quy trình, từ phân tích dữ liệu đến thiết kế một dashboard chuyên nghiệp và có tính tương tác cao.
         </p>
-        <div class="welcome-buttons">
-            <a href="https://github.com/Gobitangocbao/my-auto-dashboard" target="_blank">GitHub</a>
-        </div>
+        
+        <!-- NÚT GITHUB ĐÃ ĐƯỢC XÓA BỎ KHỎI VỊ TRÍ NÀY -->
+        
         <div class="mockup-frame">
             <div class="glow-effect"></div>
             <img src="https://www.launchuicomponents.com/app-dark.png" class="welcome-image" alt="Dashboard Preview">
         </div>
+
         <div style="height: 100px;"></div>
+
         <div class="welcome-description">
-             <p>Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.</p>
+             <p>👉 Để bắt đầu, hãy sử dụng bot Telegram để gửi dữ liệu và yêu cầu của bạn. Hệ thống N8N sẽ tự động tạo một ID và đường link dashboard dành riêng cho bạn.</p>
              <p style="background-color: #F1F5F9; padding: 0.5rem; border-radius: 0.5rem; color: #334155;">Ví dụ về một đường link hợp lệ: <b>/?dashboard_id=dash-abc-123</b></p>
         </div>
     </div>
-    <style> /* CSS nội bộ cho hàm này */
-        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 3rem; padding-bottom: 3rem; }
-        .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
-        .welcome-description { max-width: 600px; font-size: 1.125rem; color: #475569; animation: appear 0.5s ease-out 100ms forwards; opacity: 0; margin-bottom: 2rem; }
-        .welcome-buttons { display: flex; gap: 1rem; animation: appear 0.5s ease-out 300ms forwards; opacity: 0; }
-        .welcome-buttons a { text-decoration: none; color: #FFFFFF; background-color: #0F172A; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .welcome-buttons a:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-        .mockup-frame { position: relative; margin-top: 4rem; border-radius: 0.75rem; background: #F8FAFC; padding: 0.75rem; border: 1px solid #E2E8F0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: appear 0.5s ease-out 700ms forwards; opacity: 0; }
-        .glow-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.15) 10%, rgba(255, 255, 255, 0) 60%); filter: blur(40px); z-index: -1; }
-        .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
-    </style>
     """
     
-    st.markdown(html_body, unsafe_allow_html=True)
+    st.markdown(welcome_html, unsafe_allow_html=True)
     
 # ==============================================================================
 # PHẦN 1: CẤU HÌNH TRANG VÀ KẾT NỐI DỮ LIỆU
@@ -388,24 +331,20 @@ def render_dashboard(config, df):
 # PHẦN 3: CHƯƠNG TRÌNH CHÍNH (MAIN EXECUTION)
 # ==============================================================================
 
-# GỌI HÀM NÀY MỘT LẦN DUY NHẤT Ở ĐÂY
-apply_global_styles_and_effects()
-
-# Lấy dashboard_id từ tham số URL
+# Lấy dashboard_id từ tham số URL trước
 dashboard_id = st.query_params.get("dashboard_id")
 
+# Logic điều khiển chính
 if not dashboard_id:
     # --- XỬ LÝ CHO TRANG CHÀO MỪNG ---
-    
-    # 1. Chỉ áp dụng hiệu ứng nền "sao chổi" cho trang này.
-    shooting_stars_background() 
-    
-    # 2. Hiển thị nội dung của trang chào mừng.
-    show_professional_welcome_page() 
+    # Chỉ gọi hàm duy nhất chứa tất cả mọi thứ của trang chào mừng
+    show_welcome_page_with_shooting_stars()
     
 else:
     # --- XỬ LÝ CHO TRANG DASHBOARD ---
-    # Nền sẽ là màu trắng (hoặc màu từ theme) bình thường, không có sao chổi.
+    
+    # Chỉ áp dụng các style chung khi hiển thị dashboard
+    apply_common_styles()
     
     with st.spinner('Đang tải dữ liệu và bản thiết kế từ cơ sở dữ liệu...'):
         dashboard_config, df = load_dashboard_data(dashboard_id)
