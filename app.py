@@ -16,6 +16,7 @@ def show_welcome_page():
     """
     Hàm này chứa TẤT CẢ MỌI THỨ cho trang chào mừng:
     Cả hiệu ứng nền sao chổi, style CSS, và nội dung HTML.
+    ĐÃ SỬA LỖI MÀU SẮC CỦA SAO CHỔI.
     """
     welcome_html = """
     <style>
@@ -30,12 +31,18 @@ def show_welcome_page():
         }
         .shooting-star {
             position: absolute; width: 2px; height: 200px;
-            background: linear-gradient(45deg, rgba(150, 150, 150, 0.5), rgba(150, 150, 150, 0));
+            
+            /* >>>>>>>>> THAY ĐỔI QUAN TRỌNG Ở ĐÂY <<<<<<<<< */
+            /* Đổi màu sao chổi thành màu xám đậm để có độ tương phản trên nền trắng */
+            background: linear-gradient(45deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+            
             animation-name: animStar; animation-timing-function: linear; animation-iteration-count: infinite;
-            filter: drop-shadow(0 0 6px rgba(150, 150, 150, 0.3));
+            
+            /* Đổi cả màu của hiệu ứng đổ bóng */
+            filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.1));
         }
 
-        /* === Style cho Trang Chào mừng === */
+        /* === Style cho Trang Chào mừng (Giữ nguyên) === */
         @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .welcome-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem; }
         .welcome-title { font-size: 3.5rem; font-weight: 700; background: linear-gradient(90deg, #1E293B, #64748B); -webkit-background-clip: text; background-clip: text; color: transparent; animation: appear 0.5s ease-out forwards; padding-bottom: 1rem; }
@@ -45,7 +52,7 @@ def show_welcome_page():
         .welcome-image { border-radius: 0.25rem; width: 100%; max-width: 800px; }
     </style>
 
-    <!-- HTML cho Hiệu ứng nền -->
+    <!-- HTML cho Hiệu ứng nền (Giữ nguyên) -->
     <div class="stars-container">
         <script>
             const starsContainer = document.querySelector('.stars-container');
@@ -64,7 +71,7 @@ def show_welcome_page():
         </script>
     </div>
 
-    <!-- HTML cho Nội dung Trang -->
+    <!-- HTML cho Nội dung Trang (Giữ nguyên) -->
     <div class="welcome-container">
         <h1 class="welcome-title">Chào mừng đến với Trình tạo Dashboard bằng AI</h1>
         <p class="welcome-description">
